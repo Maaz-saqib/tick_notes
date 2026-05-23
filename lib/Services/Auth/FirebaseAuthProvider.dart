@@ -1,13 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:practice_app/Services/Auth/AuthUser.dart';
-import 'package:practice_app/Services/Auth/AuthProvider.dart';
+import 'package:practice_app/Services/Auth/Auth_Provider.dart';
 import 'package:practice_app/Services/Auth/AuthException.dart';
 
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth, FirebaseAuthException;
 
 import '../../firebase_options.dart';
 
-class FirebaseAuthProvider implements AuthProvider{
+class FirebaseAuthProvider implements Auth_Provider{
   @override
   Future<AuthUser> LogIn({
     required String email,

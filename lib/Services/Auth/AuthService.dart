@@ -1,9 +1,9 @@
-import 'package:practice_app/Services/Auth/AuthProvider.dart';
+import 'package:practice_app/Services/Auth/Auth_Provider.dart';
 import 'package:practice_app/Services/Auth/AuthUser.dart';
 import 'package:practice_app/Services/Auth/FirebaseAuthProvider.dart';
 
-class AuthService implements AuthProvider{
-  final AuthProvider provider;
+class AuthService implements Auth_Provider{
+  final Auth_Provider provider;
   AuthService(this.provider);
 
   factory AuthService.firebase() => AuthService(FirebaseAuthProvider());
