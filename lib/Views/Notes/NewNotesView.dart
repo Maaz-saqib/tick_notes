@@ -90,7 +90,6 @@ class _NewNoteViewState extends State<NewNoteView> {
                     hintText: 'Start typing your note....',
                   ),
                 );
-                break;
               default:
                 return const CircularProgressIndicator();
             }

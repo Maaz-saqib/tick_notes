@@ -57,7 +57,8 @@ class _LoginViewState extends State<LoginView> {
                 email: email,
                 password: password,
               );
-              final user= AuthService.firebase().currentUser;
+              if (!context.mounted) return;
+              final user = AuthService.firebase().currentUser;
               if(user ?.isEmailVerified ?? false){
                 // user's email is verified
                 Navigator.of(context)
@@ -74,17 +75,20 @@ class _LoginViewState extends State<LoginView> {
                 );
               }
 
-            }on UserNotFoundAuthException{
+            } on UserNotFoundAuthException {
+              if (!context.mounted) return;
               await showErrorDialog(
-                  context,
-                  'User Not Found',
+                context,
+                'User Not Found',
               );
-            }on WrongPasswordAuthException{
+            } on WrongPasswordAuthException {
+              if (!context.mounted) return;
               await showErrorDialog(
                 context,
                 'Wrong Credentials',
               );
-            }on GenericAuthException{
+            } on GenericAuthException {
+              if (!context.mounted) return;
               await showErrorDialog(
                 context,
                 'Authentication Error',
