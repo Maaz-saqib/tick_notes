@@ -4,6 +4,7 @@ import 'package:practice_app/Constants/Routes.dart';
 import '../Services/Auth/AuthException.dart';
 import '../Services/Auth/bloc/auth_bloc.dart';
 import '../Services/Auth/bloc/auth_event.dart';
+import '../Services/Auth/bloc/auth_state.dart';
 import '../Utilities/Dialog/Error_Dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -19,8 +20,8 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   void initState() {
-    _email=TextEditingController();
-    _password=TextEditingController();
+    _email = TextEditingController();
+    _password = TextEditingController();
     super.initState();
   }
 
@@ -34,7 +35,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('LOGIN'), ),
+      appBar: AppBar(title: const Text('LOGIN'),),
       body: Column(
         children: [
           TextField(
@@ -42,52 +43,57 @@ class _LoginViewState extends State<LoginView> {
             enableSuggestions: false,
             autocorrect: false,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration( hintText: 'Enter your email here'),
+            decoration: const InputDecoration(
+                hintText: 'Enter your email here'),
           ),
           TextField(
             controller: _password,
             obscureText: true,
             enableSuggestions: false,
             autocorrect: false,
-            decoration: const InputDecoration(hintText: 'Enter your password here'),
+            decoration: const InputDecoration(
+                hintText: 'Enter your password here'),
           ),
-          TextButton(onPressed: () async {
-            final email=_email.text;
-            final password=_password.text;
-            try{
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) async{
+              if(state is AuthStateLoggedOut){
+                if(state.exception is UserNotFoundAuthException){
+                  await showErrorDialog(
+                    context,
+                    'User Not Found',
+                  );
+                }else if(state.exception is WrongPasswordAuthException){
+                  await showErrorDialog(
+                    context,
+                    'Wrong Credentials',
+                  );
+                }else if(state.exception is GenericAuthException){
+                  await showErrorDialog(
+                    context,
+                    'Authentication Error',
+                  );
+                }
+              }
+
+            },
+            child: TextButton(onPressed: () async {
+              final email = _email.text;
+              final password = _password.text;
               context.read<AuthBloc>().add(
                 AuthEventLogIn(
                   email,
                   password,
                 ),
               );
-            } on UserNotFoundAuthException {
-              if (!context.mounted) return;
-              await showErrorDialog(
-                context,
-                'User Not Found',
-              );
-            } on WrongPasswordAuthException {
-              if (!context.mounted) return;
-              await showErrorDialog(
-                context,
-                'Wrong Credentials',
-              );
-            } on GenericAuthException {
-              if (!context.mounted) return;
-              await showErrorDialog(
-                context,
-                'Authentication Error',
-              );
-            }
-          },
-              child: const Text('Login')
+            },
+                child: const Text('Login')
+            ),
           ),
           TextButton(
-            onPressed: (){
+            onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
-                  registerRoute,
-                  (route) => false,
+                registerRoute,
+                    (route) => false,
               );
             },
             child: Text('No Registered yet? Register Here'),
