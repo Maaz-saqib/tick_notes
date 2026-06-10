@@ -4,6 +4,7 @@ import 'package:practice_app/Services/Auth/AuthException.dart';
 import 'package:practice_app/Services/Auth/AuthUser.dart';
 import 'package:test/test.dart';
 
+
 void main(){
   group('Mock Authentication', () {
     final provider= MockAuthProvider();
