@@ -143,4 +143,9 @@ class MockAuthProvider implements AuthProvider{
   @override
   String get providerId => throw UnimplementedError();
 
+  // @override
+  // Future<void> sendPasswordReset({required String email}) {
+  //   throw UnimplementedError();
+  // }
+
 }

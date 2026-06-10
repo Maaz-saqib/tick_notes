@@ -10,6 +10,7 @@ import 'Services/Auth/bloc/auth_event.dart';
 import 'Services/Auth/bloc/auth_state.dart';
 import 'Views/Notes/create_update_notes_view.dart';
 import 'Views/Notes/NotesView.dart';
+import 'Views/forget_password_view.dart';
 import 'helpers/loading/loading_screen.dart';
 
 void main() {
@@ -56,6 +57,8 @@ class HomePage extends StatelessWidget {
           return const VerifyEmailView();
         }else if(state is AuthStateLoggedOut){
           return const LoginView();
+        }else if(state is AuthStateForgetPassword){
+          return const ForgetPasswordView();
         }else if(state is AuthStateRegistering) {
           return const RegisterView();
         }else{
