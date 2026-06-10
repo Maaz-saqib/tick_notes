@@ -10,6 +10,7 @@ import 'Services/Auth/bloc/auth_event.dart';
 import 'Services/Auth/bloc/auth_state.dart';
 import 'Views/Notes/create_update_notes_view.dart';
 import 'Views/Notes/NotesView.dart';
+import 'helpers/loading/loading_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +38,17 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<AuthBloc>().add(const AuthEventInitialize());
-    return BlocBuilder<AuthBloc, AuthState>(
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if(state.isLoading){
+          LoadingScreen().show(
+            context: context,
+            text: state.loadingText?? 'Please wait a moment',
+          );
+        }else{
+          LoadingScreen().hide();
+        }
+      },
       builder: (context, state) {
         if (state is AuthStateLoggedIn) {
           return const NotesView();
