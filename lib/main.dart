@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:practice_app/Services/Auth/FirebaseAuthProvider.dart';
 import 'package:practice_app/Views/LoginView.dart';
 import 'package:practice_app/Views/RegisterView.dart';
 import 'package:practice_app/Views/VerifyEmailView.dart';
@@ -12,24 +11,23 @@ import 'Views/Notes/create_update_notes_view.dart';
 import 'Views/Notes/NotesView.dart';
 import 'Views/forget_password_view.dart';
 import 'helpers/loading/loading_screen.dart';
+import 'package:practice_app/screens/animated_splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MaterialApp(
-
-    title: 'Flutter Demo',
-    theme: ThemeData(
-
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+  runApp(
+    MaterialApp(
+      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false, // Hides the debug banner for a cleaner look
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
+      // 2. SET THE HOME VIEW TO YOUR CUSTOM ANIMATED SPLASH SCREEN
+      home: const AnimatedSplashScreen(),
+      routes: {
+        createOrUpdateNoteRoute : (context) => const CreateUpdateNoteView(),
+      },
     ),
-    home: BlocProvider<AuthBloc>(
-      create: (context) => AuthBloc(FirebaseAuthProvider()),
-      child: const HomePage(),
-    ),
-    routes: {
-      createOrUpdateNoteRoute : (context) => const CreateUpdateNoteView(),
-    },
-  ),
   );
 }
 
@@ -63,7 +61,7 @@ class HomePage extends StatelessWidget {
           return const RegisterView();
         }else{
           return const Scaffold(
-            body: CircularProgressIndicator(),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
       },
