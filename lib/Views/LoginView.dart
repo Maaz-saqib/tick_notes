@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:practice_app/Utilities/Dialog/loading_dialog.dart';
 import '../Services/Auth/AuthException.dart';
 import '../Services/Auth/bloc/auth_bloc.dart';
 import '../Services/Auth/bloc/auth_event.dart';
@@ -39,24 +38,18 @@ class _LoginViewState extends State<LoginView> {
         if (state is AuthStateLoggedOut) {
           if (state.exception is UserNotFoundAuthException) {
             await showErrorDialog(
-            context,
-            'Cannot find a user with the entered credentials!',
+              context,
+              'Cannot find a user with the entered credentials!',
             );
           } else if (state.exception is WrongPasswordAuthException) {
-            await showErrorDialog(
-            context,
-            'Wrong Credentials',
-            );
+            await showErrorDialog(context, 'Wrong Credentials');
           } else if (state.exception is GenericAuthException) {
-            await showErrorDialog(
-            context,
-            'Authentication Error',
-            );
+            await showErrorDialog(context, 'Authentication Error');
           }
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('LOGIN'),),
+        appBar: AppBar(title: const Text('LOGIN')),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -68,7 +61,8 @@ class _LoginViewState extends State<LoginView> {
                 autocorrect: false,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
-                    hintText: 'Enter your email here'),
+                  hintText: 'Enter your email here',
+                ),
               ),
               TextField(
                 controller: _password,
@@ -76,34 +70,26 @@ class _LoginViewState extends State<LoginView> {
                 enableSuggestions: false,
                 autocorrect: false,
                 decoration: const InputDecoration(
-                    hintText: 'Enter your password here'),
+                  hintText: 'Enter your password here',
+                ),
               ),
               TextButton(
                 onPressed: () async {
                   final email = _email.text;
                   final password = _password.text;
-                  context.read<AuthBloc>().add(
-                        AuthEventLogIn(
-                          email,
-                          password,
-                        ),
-                      );
+                  context.read<AuthBloc>().add(AuthEventLogIn(email, password));
                 },
                 child: const Text('Login'),
               ),
               TextButton(
                 onPressed: () {
-                  context.read<AuthBloc>().add(
-                    const AuthEventForgetPassword(),
-                  );
+                  context.read<AuthBloc>().add(const AuthEventForgetPassword());
                 },
                 child: const Text('I forget my password'),
               ),
               TextButton(
                 onPressed: () {
-                  context.read<AuthBloc>().add(
-                        const AuthEventShouldRegister(),
-                      );
+                  context.read<AuthBloc>().add(const AuthEventShouldRegister());
                 },
                 child: const Text('Not registered yet? Register here!'),
               ),

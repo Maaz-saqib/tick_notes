@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:practice_app/Constants/Routes.dart';
-import 'package:practice_app/Services/Auth/AuthService.dart';
 import '../Services/Auth/AuthException.dart';
 import '../Services/Auth/bloc/auth_bloc.dart';
 import '../Services/Auth/bloc/auth_event.dart';
@@ -16,7 +14,6 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
-
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -38,20 +35,20 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
-        if(state is AuthStateRegistering){
-          if(state.exception is WeakPasswordAuthException){
+        if (state is AuthStateRegistering) {
+          if (state.exception is WeakPasswordAuthException) {
             await showErrorDialog(context, 'Weak Password');
-          }else if(state.exception is EmailAlreadyInUseAuthException){
+          } else if (state.exception is EmailAlreadyInUseAuthException) {
             await showErrorDialog(context, 'Email already in use');
-          }else if(state.exception is InvalidEmailAuthException){
+          } else if (state.exception is InvalidEmailAuthException) {
             await showErrorDialog(context, 'Invalid Email');
-          }else if(state.exception is GenericAuthException){
+          } else if (state.exception is GenericAuthException) {
             await showErrorDialog(context, 'Failed to Register');
           }
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: Text('REGISTER'),),
+        appBar: AppBar(title: Text('REGISTER')),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -65,7 +62,8 @@ class _RegisterViewState extends State<RegisterView> {
                 autofocus: true,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
-                    hintText: 'Enter your email here'),
+                  hintText: 'Enter your email here',
+                ),
               ),
               TextField(
                 controller: _password,
@@ -73,34 +71,31 @@ class _RegisterViewState extends State<RegisterView> {
                 enableSuggestions: false,
                 autocorrect: false,
                 decoration: const InputDecoration(
-                    hintText: 'Enter your password here'),
+                  hintText: 'Enter your password here',
+                ),
               ),
               Center(
                 child: Column(
                   children: [
-                    TextButton(onPressed: () async {
-                      final email = _email.text;
-                      final password = _password.text;
-                      context.read<AuthBloc>().add(
-                        AuthEventRegister(
-                          email,
-                          password,
-                        ),
-                      );
-                    },
-                        child: const Text('Register')
+                    TextButton(
+                      onPressed: () async {
+                        final email = _email.text;
+                        final password = _password.text;
+                        context.read<AuthBloc>().add(
+                          AuthEventRegister(email, password),
+                        );
+                      },
+                      child: const Text('Register'),
                     ),
-                    TextButton(onPressed: () {
-                      context.read<AuthBloc>().add(
-                        const AuthEventLogOut() ,
-                      );
-                    },
+                    TextButton(
+                      onPressed: () {
+                        context.read<AuthBloc>().add(const AuthEventLogOut());
+                      },
                       child: const Text('Already Registered? Login HERE!'),
                     ),
                   ],
                 ),
               ),
-
             ],
           ),
         ),
