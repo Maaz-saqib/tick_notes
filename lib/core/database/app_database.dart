@@ -1,0 +1,56 @@
+import 'dart:io';
+import 'package:drift/drift.dart';
+import 'package:drift/native.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+
+part 'app_database.g.dart';
+
+class Notes extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text()();
+  TextColumn get body => text()();
+  IntColumn get colorTag => integer().withDefault(const Constant(0))();
+  DateTimeColumn get updatedAt => dateTime()();
+}
+
+class Todos extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text()();
+  DateTimeColumn get dueDate => dateTime().nullable()();
+  BoolColumn get isCompleted => boolean().withDefault(const Constant(false))();
+  IntColumn get colorTag => integer().withDefault(const Constant(0))();
+  DateTimeColumn get updatedAt => dateTime()();
+}
+
+class PomodoroSessions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get startTime => dateTime()();
+  DateTimeColumn get endTime => dateTime()();
+  IntColumn get durationMinutes => integer()();
+  TextColumn get mode => text()(); // 'focus', 'break', or 'open'
+}
+
+class Settings extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {key};
+}
+
+@DriftDatabase(tables: [Notes, Todos, PomodoroSessions, Settings])
+class AppDatabase extends _$AppDatabase {
+  AppDatabase() : super(_openConnection());
+
+  @override
+  int get schemaVersion => 1;
+}
+
+LazyDatabase _openConnection() {
+  return LazyDatabase(() async {
+    final dbFolder = await getApplicationDocumentsDirectory();
+    final file = File(p.join(dbFolder.path, 'tick_notes_db.sqlite'));
+    return NativeDatabase.createInBackground(file);
+  });
+}
