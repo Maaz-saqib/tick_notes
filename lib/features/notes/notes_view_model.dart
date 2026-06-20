@@ -38,4 +38,15 @@ class NotesViewModel extends _$NotesViewModel {
   Future<void> deleteNote(int id) {
     return ref.read(notesRepositoryProvider).delete(id);
   }
+
+  Future<int> restoreNote(Note note) {
+    return ref.read(notesRepositoryProvider).add(
+      NotesCompanion.insert(
+        title: note.title,
+        body: note.body,
+        colorTag: Value(note.colorTag),
+        updatedAt: note.updatedAt,
+      ),
+    );
+  }
 }

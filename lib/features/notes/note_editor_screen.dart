@@ -7,6 +7,26 @@ import '../../core/database/app_database.dart';
 import '../../Utilities/Generics/get_arguments.dart';
 import '../../Utilities/Dialog/cannot_share_empty_note_dialog.dart';
 
+Color getNoteColor(BuildContext context, int colorTag) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  switch (colorTag) {
+    case 1:
+      return isDark ? const Color(0xFF421D1D) : const Color(0xFFFFEBEE); // Soft Red
+    case 2:
+      return isDark ? const Color(0xFF422D1D) : const Color(0xFFFFF3E0); // Soft Orange
+    case 3:
+      return isDark ? const Color(0xFF423D1D) : const Color(0xFFFFFDE7); // Soft Yellow
+    case 4:
+      return isDark ? const Color(0xFF1D4222) : const Color(0xFFE8F5E9); // Soft Green
+    case 5:
+      return isDark ? const Color(0xFF1D2E42) : const Color(0xFFE3F2FD); // Soft Blue
+    case 6:
+      return isDark ? const Color(0xFF331D42) : const Color(0xFFF3E5F5); // Soft Purple
+    default:
+      return Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3); // Default
+  }
+}
+
 class NoteEditorScreen extends ConsumerStatefulWidget {
   const NoteEditorScreen({super.key});
 
@@ -102,9 +122,16 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scaffoldBgColor = _note != null
+        ? getNoteColor(context, _note!.colorTag)
+        : Theme.of(context).colorScheme.surface;
+
     return Scaffold(
+      backgroundColor: scaffoldBgColor,
       appBar: AppBar(
         title: const Text('Edit Note'),
+        backgroundColor: scaffoldBgColor,
+        elevation: 0,
         actions: [
           IconButton(
             onPressed: () async {
@@ -112,7 +139,7 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
               if (text.isEmpty) {
                 await showCannotShareEmptyNoteDialog(context);
               } else {
-                Share.share(text);
+                await SharePlus.instance.share(ShareParams(text: text));
               }
             },
             icon: const Icon(Icons.share),
@@ -155,6 +182,81 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
             return const Center(child: CircularProgressIndicator());
           }
         },
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Color Tag',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 44,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 7,
+                  itemBuilder: (context, index) {
+                    final color = getNoteColor(context, index);
+                    final isSelected = (_note?.colorTag ?? 0) == index;
+                    return GestureDetector(
+                      onTap: () {
+                        if (_note == null) return;
+                        setState(() {
+                          _note = _note!.copyWith(colorTag: index);
+                        });
+                        ref.read(notesViewModelProvider.notifier).updateNoteContent(
+                          _note!.id,
+                          _titleController.text,
+                          _bodyController.text,
+                          index,
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 12),
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: color,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.outlineVariant,
+                            width: isSelected ? 3 : 1,
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                    blurRadius: 6,
+                                    spreadRadius: 1,
+                                  )
+                                ]
+                              : null,
+                        ),
+                        child: isSelected
+                            ? Icon(
+                                Icons.check,
+                                size: 18,
+                                color: Theme.of(context).colorScheme.primary,
+                              )
+                            : null,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
