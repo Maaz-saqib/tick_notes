@@ -1,0 +1,277 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'todo_view_model.dart';
+import '../notes/note_editor_screen.dart' show getNoteColor;
+import '../../core/database/app_database.dart';
+import '../../Utilities/Generics/get_arguments.dart';
+
+class TodoEditorScreen extends ConsumerStatefulWidget {
+  const TodoEditorScreen({super.key});
+
+  @override
+  ConsumerState<TodoEditorScreen> createState() => _TodoEditorScreenState();
+}
+
+class _TodoEditorScreenState extends ConsumerState<TodoEditorScreen> {
+  Todo? _todo;
+  late final TextEditingController _titleController;
+  DateTime? _dueDate;
+  TimeOfDay? _dueTime;
+  bool _hasReminder = false;
+  int _colorTag = 0;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    _titleController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    super.dispose();
+  }
+
+  void _initializeData() {
+    if (_isInitialized) return;
+
+    final argumentTodo = context.getArgument<Todo>();
+    if (argumentTodo != null) {
+      _todo = argumentTodo;
+      _titleController.text = argumentTodo.title;
+      _colorTag = argumentTodo.colorTag;
+      if (argumentTodo.dueDate != null) {
+        _dueDate = argumentTodo.dueDate;
+        _dueTime = TimeOfDay.fromDateTime(argumentTodo.dueDate!);
+        _hasReminder = true; // For editing convenience, assume true if dueDate exists
+      }
+    }
+    _isInitialized = true;
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _dueDate ?? DateTime.now(),
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+    );
+    if (picked != null && picked != _dueDate) {
+      setState(() {
+        _dueDate = picked;
+      });
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _dueTime ?? TimeOfDay.now(),
+    );
+    if (picked != null && picked != _dueTime) {
+      setState(() {
+        _dueTime = picked;
+      });
+    }
+  }
+
+  Future<void> _saveTodo() async {
+    final title = _titleController.text.trim();
+    if (title.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a title')),
+      );
+      return;
+    }
+
+    DateTime? finalDueDate;
+    if (_dueDate != null) {
+      final time = _dueTime ?? const TimeOfDay(hour: 12, minute: 0);
+      finalDueDate = DateTime(
+        _dueDate!.year,
+        _dueDate!.month,
+        _dueDate!.day,
+        time.hour,
+        time.minute,
+      );
+    }
+
+    if (_todo != null) {
+      // Update
+      await ref.read(todoViewModelProvider.notifier).updateTodo(
+            id: _todo!.id,
+            title: title,
+            dueDate: finalDueDate,
+            colorTag: _colorTag,
+            isCompleted: _todo!.isCompleted,
+            hasReminder: _hasReminder,
+          );
+    } else {
+      // Add
+      await ref.read(todoViewModelProvider.notifier).addTodo(
+            title: title,
+            dueDate: finalDueDate,
+            colorTag: _colorTag,
+            hasReminder: _hasReminder,
+          );
+    }
+
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _initializeData();
+    final scaffoldBgColor = getNoteColor(context, _colorTag);
+
+    return Scaffold(
+      backgroundColor: scaffoldBgColor,
+      appBar: AppBar(
+        title: Text(_todo != null ? 'Edit Task' : 'New Task'),
+        backgroundColor: scaffoldBgColor,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: _saveTodo,
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _titleController,
+              decoration: const InputDecoration(
+                hintText: 'What needs to be done?',
+                border: InputBorder.none,
+                hintStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+              maxLines: null,
+            ),
+            const Divider(height: 32),
+            Text(
+              'Schedule',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              elevation: 0,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.calendar_today),
+                      title: Text(_dueDate == null
+                          ? 'Set Due Date'
+                          : '${_dueDate!.day}/${_dueDate!.month}/${_dueDate!.year}'),
+                      trailing: _dueDate != null
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                setState(() {
+                                  _dueDate = null;
+                                  _dueTime = null;
+                                  _hasReminder = false;
+                                });
+                              },
+                            )
+                          : null,
+                      onTap: () => _selectDate(context),
+                    ),
+                    if (_dueDate != null) ...[
+                      const Divider(height: 1),
+                      ListTile(
+                        leading: const Icon(Icons.access_time),
+                        title: Text(_dueTime == null ? 'Set Time' : _dueTime!.format(context)),
+                        onTap: () => _selectTime(context),
+                      ),
+                      const Divider(height: 1),
+                      SwitchListTile(
+                        secondary: const Icon(Icons.notifications_active_outlined),
+                        title: const Text('Set Reminder Notification'),
+                        value: _hasReminder,
+                        onChanged: (val) {
+                          setState(() {
+                            _hasReminder = val;
+                          });
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Color Tag',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 44,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: 7,
+                itemBuilder: (context, index) {
+                  final color = getNoteColor(context, index);
+                  final isSelected = _colorTag == index;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _colorTag = index;
+                      });
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 12),
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.outlineVariant,
+                          width: isSelected ? 3 : 1,
+                        ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                  blurRadius: 6,
+                                  spreadRadius: 1,
+                                )
+                              ]
+                            : null,
+                      ),
+                      child: isSelected
+                          ? Icon(
+                              Icons.check,
+                              size: 18,
+                              color: Theme.of(context).colorScheme.primary,
+                            )
+                          : null,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
