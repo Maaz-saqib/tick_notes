@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:practice_app/features/notes/notes_list_screen.dart';
 import 'package:practice_app/features/todo/todo_list_screen.dart';
 import 'package:practice_app/features/pomodoro/pomodoro_screen.dart';
+import 'package:practice_app/features/analytics/analytics_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -18,6 +19,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     NotesListScreen(),
     TodoListScreen(),
     PomodoroScreen(),
+    AnalyticsScreen(),
   ];
 
   @override
@@ -49,6 +51,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             icon: Icon(Icons.timer_outlined),
             selectedIcon: Icon(Icons.timer),
             label: 'Focus',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.bar_chart_outlined),
+            selectedIcon: Icon(Icons.bar_chart),
+            label: 'Stats',
           ),
         ],
       ),
