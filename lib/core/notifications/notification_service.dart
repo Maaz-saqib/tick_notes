@@ -23,9 +23,18 @@ class NotificationService {
       requestSoundPermission: false,
     );
 
+    // Linux requires its own settings block — omitting it causes:
+    // "Invalid argument(s): Linux settings must be set when targeting Linux"
+    const LinuxInitializationSettings initializationSettingsLinux =
+        LinuxInitializationSettings(
+      defaultActionName: 'Open notification',
+    );
+
     const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsDarwin,
+      macOS: initializationSettingsDarwin, // reuse Darwin settings for macOS
+      linux: initializationSettingsLinux,
     );
 
     await _notificationsPlugin.initialize(
@@ -84,6 +93,12 @@ class NotificationService {
           presentBadge: true,
           presentSound: true,
         ),
+        macOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+        linux: LinuxNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
