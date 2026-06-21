@@ -122,31 +122,34 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen>
     final progress = total > 0 ? elapsed / total : 0.0;
 
     String modeLabel = '';
+    String subLabel = '';
     Color themeColor = Theme.of(context).colorScheme.primary;
 
-    switch (timerState.mode) {
-      case PomodoroMode.focus:
-        modeLabel = 'Focus Session';
+    if (timerState.mode == FocusMode.open) {
+      modeLabel = 'Open Focus';
+      themeColor = Colors.blue;
+      subLabel = 'No target — stop anytime';
+    } else {
+      if (timerState.pomodoroPhase == PomodoroPhase.focus) {
+        modeLabel = 'Focus Phase';
         themeColor = Colors.redAccent;
-        break;
-      case PomodoroMode.shortBreak:
-        modeLabel = 'Short Break';
+        subLabel = 'Session ${timerState.pomodoroSession} of 4';
+      } else {
+        modeLabel = 'Break Phase';
         themeColor = Colors.green;
-        break;
-      case PomodoroMode.open:
-        modeLabel = 'Stopwatch Mode';
-        themeColor = Colors.blue;
-        break;
+        subLabel = 'Time to relax';
+      }
     }
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Focus Timer'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: _showSettingsBottomSheet,
-          ),
+          if (timerState.mode == FocusMode.pomodoro)
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: _showSettingsBottomSheet,
+            ),
         ],
       ),
       body: Center(
@@ -156,21 +159,16 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Segmented controls for Mode Selection
-              SegmentedButton<PomodoroMode>(
+              SegmentedButton<FocusMode>(
                 segments: const [
                   ButtonSegment(
-                    value: PomodoroMode.focus,
-                    label: Text('Focus'),
+                    value: FocusMode.pomodoro,
+                    label: Text('Pomodoro'),
                     icon: Icon(Icons.work_outline),
                   ),
                   ButtonSegment(
-                    value: PomodoroMode.shortBreak,
-                    label: Text('Break'),
-                    icon: Icon(Icons.coffee_outlined),
-                  ),
-                  ButtonSegment(
-                    value: PomodoroMode.open,
-                    label: Text('Stopwatch'),
+                    value: FocusMode.open,
+                    label: Text('Open Focus'),
                     icon: Icon(Icons.timer_outlined),
                   ),
                 ],
@@ -188,8 +186,8 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen>
                     width: 250,
                     height: 250,
                     child: CircularProgressIndicator(
-                      value: timerState.mode == PomodoroMode.open
-                          ? null // Indeterminate spin or empty progress for count up
+                      value: timerState.mode == FocusMode.open
+                          ? 0.0 // Keep empty/clean for open count up
                           : 1.0 - progress, // Countdown visual
                       strokeWidth: 10,
                       backgroundColor: themeColor.withOpacity(0.15),
@@ -200,7 +198,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        _formatDuration(timerState.mode == PomodoroMode.open
+                        _formatDuration(timerState.mode == FocusMode.open
                             ? timerState.elapsedDuration
                             : (timerState.durationLimit - timerState.elapsedDuration)),
                         style: Theme.of(context).textTheme.displayLarge?.copyWith(
@@ -212,7 +210,14 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen>
                       Text(
                         modeLabel,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.bold,
+                              color: themeColor,
+                            ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subLabel,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Theme.of(context).colorScheme.outline,
                             ),
                       ),
@@ -225,29 +230,34 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (timerState.isRunning)
+                  // Stop Button: Smaller, on the left, visible if running or paused (if progress exists)
+                  if (timerState.elapsedDuration > Duration.zero || timerState.isRunning) ...[
                     IconButton.filledTonal(
-                      iconSize: 32,
+                      iconSize: 24,
+                      icon: const Icon(Icons.stop),
+                      onPressed: () => notifier.stopSession(),
+                    ),
+                    const SizedBox(width: 24),
+                  ],
+                  // Play/Pause Button: Large, centered
+                  if (timerState.isRunning)
+                    IconButton.filled(
+                      iconSize: 44,
                       icon: const Icon(Icons.pause),
                       onPressed: () => notifier.pauseSession(),
                     )
                   else
                     IconButton.filled(
-                      iconSize: 32,
+                      iconSize: 44,
                       icon: const Icon(Icons.play_arrow),
                       onPressed: () => notifier.startSession(),
                     ),
-                  const SizedBox(width: 24),
-                  if (timerState.elapsedDuration > Duration.zero || timerState.isRunning)
-                    IconButton.filledTonal(
-                      iconSize: 32,
-                      icon: const Icon(Icons.stop),
-                      onPressed: () => notifier.stopSession(),
-                    ),
-                  if (timerState.mode != PomodoroMode.open && timerState.isRunning) ...[
+                  // Skip Button: Smaller, on the right, Pomodoro only
+                  if (timerState.mode == FocusMode.pomodoro &&
+                      (timerState.elapsedDuration > Duration.zero || timerState.isRunning)) ...[
                     const SizedBox(width: 24),
                     IconButton.filledTonal(
-                      iconSize: 32,
+                      iconSize: 24,
                       icon: const Icon(Icons.skip_next),
                       onPressed: () => notifier.skipSession(),
                     ),

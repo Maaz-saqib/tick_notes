@@ -1,7 +1,5 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tick_notes/Services/Auth/FirebaseAuthProvider.dart';
-import 'package:tick_notes/Services/Auth/bloc/auth_bloc.dart';
 import 'package:tick_notes/main.dart'; // Allows access to your HomePage
 
 class AnimatedSplashScreen extends StatefulWidget {
@@ -15,6 +13,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _progressAnimation;
+  late final String _selectedQuote;
 
   final List<IconData> _icons = [
     Icons.edit_note,
@@ -23,20 +22,46 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     Icons.check_circle_outline,
   ];
 
+  static const List<String> _quotes = [
+    "Discipline is choosing between what you want now and what you want most.",
+    "Consistency is the foundation of mastery.",
+    "Growth begins at the edge of comfort.",
+    "Small steps every day outrun big leaps once in a while.",
+    "Focus is not about saying yes — it's about saying no to everything else.",
+    "Your future self is built by your present habits.",
+    "Don't wait for motivation. Build the system.",
+    "The clock doesn't stop. Neither should you.",
+    "The secret of getting ahead is getting started.",
+    "Focus on progress, not perfection.",
+    "Discipline is freedom.",
+    "Small habits shape big destinies.",
+    "Do it now. Your future self will thank you.",
+    "One step at a time. One day at a time.",
+  ];
+
   int _currentIconIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    // Select one random quote to display during the splash duration
+    _selectedQuote = _quotes[Random().nextInt(_quotes.length)];
+
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3500),
+      duration: const Duration(milliseconds: 2500),
     );
 
-    _progressAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
+    _progressAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(_controller);
 
     _controller.addListener(() {
-      final newIndex = (_controller.value * _icons.length).floor().clamp(0, _icons.length - 1);
+      final newIndex = (_controller.value * _icons.length).floor().clamp(
+        0,
+        _icons.length - 1,
+      );
       if (newIndex != _currentIconIndex) {
         setState(() {
           _currentIconIndex = newIndex;
@@ -56,10 +81,8 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
   void _navigateToHome() {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => BlocProvider<AuthBloc>(
-          create: (context) => AuthBloc(FirebaseAuthProvider()),
-          child: const HomePage(),
-        ),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const HomePage(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
@@ -120,6 +143,22 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                     ),
                   );
                 },
+              ),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              height: 60,
+              padding: const EdgeInsets.symmetric(horizontal: 40.0),
+              child: Text(
+                _selectedQuote,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontStyle: FontStyle.italic,
+                  fontSize: 15,
+                  color: primaryColor.withOpacity(0.85),
+                  height: 1.4,
+                ),
               ),
             ),
           ],

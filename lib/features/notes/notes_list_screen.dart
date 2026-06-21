@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
-import 'package:tick_notes/Services/Auth/bloc/auth_bloc.dart';
-import 'package:tick_notes/Services/Auth/bloc/auth_event.dart';
 import 'package:tick_notes/core/theme/theme_notifier.dart';
 import 'notes_view_model.dart';
 import 'note_editor_screen.dart'; // To get getNoteColor
 import '../../Constants/Routes.dart';
-import '../../Enums/MenuActions.dart';
-import '../../Utilities/Dialog/LogOut_dialog.dart';
 
 class NotesListScreen extends ConsumerStatefulWidget {
   const NotesListScreen({super.key});
@@ -77,25 +72,13 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
-                value: Colors.deepPurple,
-                child: Text('Purple (Default)'),
-              ),
-              const PopupMenuItem(
                 value: Colors.blue,
-                child: Text('Blue'),
+                child: Text('Blue (Default)'),
               ),
-              const PopupMenuItem(
-                value: Colors.teal,
-                child: Text('Teal'),
-              ),
-              const PopupMenuItem(
-                value: Colors.orange,
-                child: Text('Orange'),
-              ),
-              const PopupMenuItem(
-                value: Colors.red,
-                child: Text('Red'),
-              ),
+              const PopupMenuItem(value: Colors.deepPurple, child: Text('Purple')),
+              const PopupMenuItem(value: Colors.teal, child: Text('Teal')),
+              const PopupMenuItem(value: Colors.orange, child: Text('Orange')),
+              const PopupMenuItem(value: Colors.red, child: Text('Red')),
             ],
             tooltip: 'Change Seed Color',
           ),
@@ -105,36 +88,16 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
             },
             icon: const Icon(Icons.add),
           ),
-          PopupMenuButton<MenuAction>(
-            onSelected: (value) async {
-              switch (value) {
-                case MenuAction.logout:
-                  final shouldLogout = await showLogOutDialog(context);
-                  if (shouldLogout && context.mounted) {
-                    // Trigger the BLoC event for logout
-                    bloc.BlocProvider.of<AuthBloc>(context).add(
-                      const AuthEventLogOut(),
-                    );
-                  }
-                  break;
-              }
-            },
-            itemBuilder: (context) {
-              return const [
-                PopupMenuItem<MenuAction>(
-                  value: MenuAction.logout,
-                  child: Text('Logout'),
-                ),
-              ];
-            },
-          )
         ],
       ),
       body: Column(
         children: [
           // Search bar
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
             child: TextField(
               controller: _searchController,
               onChanged: (value) {
@@ -161,7 +124,9 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                fillColor: Theme.of(
+                  context,
+                ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
               ),
             ),
           ),
@@ -184,7 +149,9 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                           Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.2),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primaryContainer.withOpacity(0.2),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -196,15 +163,15 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                           const SizedBox(height: 24),
                           Text(
                             'No notes yet',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Tap the "+" icon in the top right to create your first note.',
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
                                   color: Theme.of(context).colorScheme.outline,
                                 ),
                           ),
@@ -229,15 +196,15 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                           const SizedBox(height: 16),
                           Text(
                             'No results found',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'No notes match "$_searchQuery". Try another search term.',
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
                                   color: Theme.of(context).colorScheme.outline,
                                 ),
                           ),
@@ -278,7 +245,9 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                       ),
                       onDismissed: (direction) async {
                         final deletedNote = note;
-                        await ref.read(notesViewModelProvider.notifier).deleteNote(note.id);
+                        await ref
+                            .read(notesViewModelProvider.notifier)
+                            .deleteNote(note.id);
 
                         if (!context.mounted) return;
                         ScaffoldMessenger.of(context).clearSnackBars();
@@ -290,7 +259,9 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                             action: SnackBarAction(
                               label: 'Undo',
                               onPressed: () async {
-                                await ref.read(notesViewModelProvider.notifier).restoreNote(deletedNote);
+                                await ref
+                                    .read(notesViewModelProvider.notifier)
+                                    .restoreNote(deletedNote);
                               },
                             ),
                             duration: const Duration(seconds: 4),
@@ -303,7 +274,9 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                           side: BorderSide(
-                            color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.outlineVariant.withOpacity(0.4),
                           ),
                         ),
                         child: InkWell(
@@ -320,19 +293,27 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  note.title.isNotEmpty ? note.title : 'Untitled',
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                  note.title.isNotEmpty
+                                      ? note.title
+                                      : 'Untitled',
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(fontWeight: FontWeight.bold),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 8),
                                 Expanded(
                                   child: Text(
-                                    note.body.isNotEmpty ? note.body : 'No content',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    note.body.isNotEmpty
+                                        ? note.body
+                                        : 'No content',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
                                         ),
                                     maxLines: 4,
                                     overflow: TextOverflow.ellipsis,
@@ -341,8 +322,11 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                                 const SizedBox(height: 8),
                                 Text(
                                   _formatDateTime(note.updatedAt),
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        color: Theme.of(context).colorScheme.outline,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.outline,
                                         fontSize: 10,
                                       ),
                                 ),

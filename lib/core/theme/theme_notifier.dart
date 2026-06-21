@@ -30,7 +30,7 @@ class ThemeSettingsState {
 class ThemeNotifier extends _$ThemeNotifier {
   static const _themeModeKey = 'theme_mode';
   static const _seedColorKey = 'seed_color';
-  static const _defaultColor = Colors.deepPurple;
+  static const _defaultColor = Colors.blue;
 
   @override
   ThemeSettingsState build() {

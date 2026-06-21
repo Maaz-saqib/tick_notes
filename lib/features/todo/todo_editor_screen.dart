@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'todo_view_model.dart';
-import '../notes/note_editor_screen.dart' show getNoteColor;
 import '../../core/database/app_database.dart';
 import '../../Utilities/Generics/get_arguments.dart';
 
@@ -18,7 +17,6 @@ class _TodoEditorScreenState extends ConsumerState<TodoEditorScreen> {
   DateTime? _dueDate;
   TimeOfDay? _dueTime;
   bool _hasReminder = false;
-  int _colorTag = 0;
   bool _isInitialized = false;
 
   @override
@@ -40,7 +38,6 @@ class _TodoEditorScreenState extends ConsumerState<TodoEditorScreen> {
     if (argumentTodo != null) {
       _todo = argumentTodo;
       _titleController.text = argumentTodo.title;
-      _colorTag = argumentTodo.colorTag;
       if (argumentTodo.dueDate != null) {
         _dueDate = argumentTodo.dueDate;
         _dueTime = TimeOfDay.fromDateTime(argumentTodo.dueDate!);
@@ -98,21 +95,21 @@ class _TodoEditorScreenState extends ConsumerState<TodoEditorScreen> {
     }
 
     if (_todo != null) {
-      // Update
+      // Update (passing 0 for colorTag)
       await ref.read(todoViewModelProvider.notifier).updateTodo(
             id: _todo!.id,
             title: title,
             dueDate: finalDueDate,
-            colorTag: _colorTag,
+            colorTag: 0,
             isCompleted: _todo!.isCompleted,
             hasReminder: _hasReminder,
           );
     } else {
-      // Add
+      // Add (passing 0 for colorTag)
       await ref.read(todoViewModelProvider.notifier).addTodo(
             title: title,
             dueDate: finalDueDate,
-            colorTag: _colorTag,
+            colorTag: 0,
             hasReminder: _hasReminder,
           );
     }
@@ -125,14 +122,10 @@ class _TodoEditorScreenState extends ConsumerState<TodoEditorScreen> {
   @override
   Widget build(BuildContext context) {
     _initializeData();
-    final scaffoldBgColor = getNoteColor(context, _colorTag);
 
     return Scaffold(
-      backgroundColor: scaffoldBgColor,
       appBar: AppBar(
         title: Text(_todo != null ? 'Edit Task' : 'New Task'),
-        backgroundColor: scaffoldBgColor,
-        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
@@ -210,63 +203,6 @@ class _TodoEditorScreenState extends ConsumerState<TodoEditorScreen> {
                     ],
                   ],
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Color Tag',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 44,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 7,
-                itemBuilder: (context, index) {
-                  final color = getNoteColor(context, index);
-                  final isSelected = _colorTag == index;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _colorTag = index;
-                      });
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(right: 12),
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isSelected
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.outlineVariant,
-                          width: isSelected ? 3 : 1,
-                        ),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                                  blurRadius: 6,
-                                  spreadRadius: 1,
-                                )
-                              ]
-                            : null,
-                      ),
-                      child: isSelected
-                          ? Icon(
-                              Icons.check,
-                              size: 18,
-                              color: Theme.of(context).colorScheme.primary,
-                            )
-                          : null,
-                    ),
-                  );
-                },
               ),
             ),
           ],

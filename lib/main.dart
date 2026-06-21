@@ -1,20 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tick_notes/Views/LoginView.dart';
-import 'package:tick_notes/Views/RegisterView.dart';
-import 'package:tick_notes/Views/VerifyEmailView.dart';
 import 'package:tick_notes/core/theme/theme_notifier.dart';
 import 'package:tick_notes/core/notifications/notification_service.dart';
 import 'package:tick_notes/features/notes/note_editor_screen.dart';
 import 'package:tick_notes/features/todo/todo_editor_screen.dart';
 import 'package:tick_notes/features/dashboard/dashboard_screen.dart';
 import 'Constants/Routes.dart';
-import 'Services/Auth/bloc/auth_bloc.dart';
-import 'Services/Auth/bloc/auth_event.dart';
-import 'Services/Auth/bloc/auth_state.dart';
-import 'Views/forget_password_view.dart';
-import 'helpers/loading/loading_screen.dart';
 import 'package:tick_notes/screens/animated_splash_screen.dart';
 
 void main() async {
@@ -66,35 +57,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<AuthBloc>().add(const AuthEventInitialize());
-    return bloc.BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state.isLoading) {
-          LoadingScreen().show(
-            context: context,
-            text: state.loadingText ?? 'Please wait a moment',
-          );
-        } else {
-          LoadingScreen().hide();
-        }
-      },
-      builder: (context, state) {
-        if (state is AuthStateLoggedIn) {
-          return const DashboardScreen();
-        } else if (state is AuthStateNeedsVerification) {
-          return const VerifyEmailView();
-        } else if (state is AuthStateLoggedOut) {
-          return const LoginView();
-        } else if (state is AuthStateForgetPassword) {
-          return const ForgetPasswordView();
-        } else if (state is AuthStateRegistering) {
-          return const RegisterView();
-        } else {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-      },
-    );
+    return const DashboardScreen();
   }
 }

@@ -33,11 +33,78 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
             _selectedDay = stats.last;
           }
 
+          final totalFocusMinutes = stats.fold<int>(0, (sum, day) => sum + day.totalMinutes);
+          final dailyAverageMinutes = stats.isEmpty ? 0.0 : totalFocusMinutes / stats.length;
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Card(
+                        elevation: 0,
+                        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.25),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Total Focus Time',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                    ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                totalFocusMinutes >= 60
+                                    ? '${totalFocusMinutes ~/ 60}h ${totalFocusMinutes % 60}m'
+                                    : '$totalFocusMinutes mins',
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Card(
+                        elevation: 0,
+                        color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.25),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Daily Average',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                                    ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '${dailyAverageMinutes.toStringAsFixed(1)}m',
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
                 Text(
                   'Last 30 Days Focus Time',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -167,8 +234,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                       itemCount: _selectedDay!.sessions.length,
                       itemBuilder: (context, index) {
                         final session = _selectedDay!.sessions[index];
-                        final isFocus = session.mode == 'focus';
-                        final color = getNoteColor(context, isFocus ? 1 : 4); // red for focus, green for break
+                        final isPomodoro = session.mode == 'pomodoro';
+                        final color = getNoteColor(context, isPomodoro ? 1 : 3); // red for pomodoro, blue for open
 
                         final startTimeStr = '${session.startTime.hour.toString().padLeft(2, '0')}:${session.startTime.minute.toString().padLeft(2, '0')}';
                         final endTimeStr = '${session.endTime.hour.toString().padLeft(2, '0')}:${session.endTime.minute.toString().padLeft(2, '0')}';
@@ -185,11 +252,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                           ),
                           child: ListTile(
                             leading: Icon(
-                              isFocus ? Icons.work : Icons.coffee,
+                              isPomodoro ? Icons.work : Icons.timer,
                               color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                             title: Text(
-                              isFocus ? 'Focus Session' : 'Break Session',
+                              isPomodoro ? 'Pomodoro Focus' : 'Open Focus',
                               style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             subtitle: Text('Time: $startTimeStr - $endTimeStr'),
