@@ -126,3 +126,15 @@ if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
   install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
     COMPONENT Runtime)
 endif()
+
+install(FILES
+  ${CMAKE_SOURCE_DIR}/../assets/icon/icon_16.png
+  ${CMAKE_SOURCE_DIR}/../assets/icon/icon_32.png
+  ${CMAKE_SOURCE_DIR}/../assets/icon/icon_48.png
+  ${CMAKE_SOURCE_DIR}/../assets/icon/icon_64.png
+  ${CMAKE_SOURCE_DIR}/../assets/icon/icon_128.png
+  ${CMAKE_SOURCE_DIR}/../assets/icon/icon_256.png
+  ${CMAKE_SOURCE_DIR}/../assets/icon/icon_512.png
+  DESTINATION share/icons/hicolor
+)
+

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Tick Notes
+Comment=Focus, Tasks and Notes
+Exec=tick_notes
+Icon=tick_notes
+Type=Application
+Categories=Utility;Productivity;
+StartupWMClass=tick_notes
