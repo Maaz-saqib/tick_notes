@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:practice_app/Services/Auth/AuthException.dart';
-import 'package:practice_app/Services/Auth/AuthUser.dart';
+import 'package:tick_notes/Services/Auth/AuthException.dart';
+import 'package:tick_notes/Services/Auth/AuthUser.dart';
 import 'package:test/test.dart';
 
 

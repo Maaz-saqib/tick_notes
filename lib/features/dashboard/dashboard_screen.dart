@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:practice_app/features/notes/notes_list_screen.dart';
-import 'package:practice_app/features/todo/todo_list_screen.dart';
-import 'package:practice_app/features/pomodoro/pomodoro_screen.dart';
-import 'package:practice_app/features/analytics/analytics_screen.dart';
+import 'package:tick_notes/features/notes/notes_list_screen.dart';
+import 'package:tick_notes/features/todo/todo_list_screen.dart';
+import 'package:tick_notes/features/pomodoro/pomodoro_screen.dart';
+import 'package:tick_notes/features/analytics/analytics_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});

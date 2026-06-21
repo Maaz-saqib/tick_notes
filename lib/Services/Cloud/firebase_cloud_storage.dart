@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:practice_app/Services/Cloud/cloud_storage_constants.dart';
-import 'package:practice_app/Services/Cloud/cloud_storage_exceptions.dart';
+import 'package:tick_notes/Services/Cloud/cloud_storage_constants.dart';
+import 'package:tick_notes/Services/Cloud/cloud_storage_exceptions.dart';
 import 'cloud_note.dart';
 
 class FirebaseCloudStorage {

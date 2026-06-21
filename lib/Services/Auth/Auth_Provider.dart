@@ -1,4 +1,4 @@
-import 'package:practice_app/Services/Auth/AuthUser.dart';
+import 'package:tick_notes/Services/Auth/AuthUser.dart';
 
 abstract class Auth_Provider{
   Future<void> initialize();

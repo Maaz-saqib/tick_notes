@@ -16,7 +16,7 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
     }
 android {
-    namespace = "com.example.practice_app"
+    namespace = "com.truvion.ticknotes"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

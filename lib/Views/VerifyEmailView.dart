@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:practice_app/Services/Auth/bloc/auth_event.dart';
+import 'package:tick_notes/Services/Auth/bloc/auth_event.dart';
 
 import '../Services/Auth/bloc/auth_bloc.dart';
 

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
-import 'package:practice_app/Services/Auth/bloc/auth_bloc.dart';
-import 'package:practice_app/Services/Auth/bloc/auth_event.dart';
-import 'package:practice_app/core/theme/theme_notifier.dart';
+import 'package:tick_notes/Services/Auth/bloc/auth_bloc.dart';
+import 'package:tick_notes/Services/Auth/bloc/auth_event.dart';
+import 'package:tick_notes/core/theme/theme_notifier.dart';
 import 'notes_view_model.dart';
 import 'note_editor_screen.dart'; // To get getNoteColor
 import '../../Constants/Routes.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:practice_app/Services/Auth/AuthUser.dart';
+import 'package:tick_notes/Services/Auth/AuthUser.dart';
 import 'package:equatable/equatable.dart';
 
 @immutable

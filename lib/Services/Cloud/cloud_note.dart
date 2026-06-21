@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:practice_app/Services/Cloud/cloud_storage_constants.dart';
+import 'package:tick_notes/Services/Cloud/cloud_storage_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 @immutable

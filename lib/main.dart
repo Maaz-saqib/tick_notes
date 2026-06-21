@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:practice_app/Views/LoginView.dart';
-import 'package:practice_app/Views/RegisterView.dart';
-import 'package:practice_app/Views/VerifyEmailView.dart';
-import 'package:practice_app/core/theme/theme_notifier.dart';
-import 'package:practice_app/core/notifications/notification_service.dart';
-import 'package:practice_app/features/notes/note_editor_screen.dart';
-import 'package:practice_app/features/todo/todo_editor_screen.dart';
-import 'package:practice_app/features/dashboard/dashboard_screen.dart';
+import 'package:tick_notes/Views/LoginView.dart';
+import 'package:tick_notes/Views/RegisterView.dart';
+import 'package:tick_notes/Views/VerifyEmailView.dart';
+import 'package:tick_notes/core/theme/theme_notifier.dart';
+import 'package:tick_notes/core/notifications/notification_service.dart';
+import 'package:tick_notes/features/notes/note_editor_screen.dart';
+import 'package:tick_notes/features/todo/todo_editor_screen.dart';
+import 'package:tick_notes/features/dashboard/dashboard_screen.dart';
 import 'Constants/Routes.dart';
 import 'Services/Auth/bloc/auth_bloc.dart';
 import 'Services/Auth/bloc/auth_event.dart';
 import 'Services/Auth/bloc/auth_state.dart';
 import 'Views/forget_password_view.dart';
 import 'helpers/loading/loading_screen.dart';
-import 'package:practice_app/screens/animated_splash_screen.dart';
+import 'package:tick_notes/screens/animated_splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,6 +1,6 @@
-import 'package:practice_app/Services/Auth/Auth_Provider.dart';
-import 'package:practice_app/Services/Auth/AuthUser.dart';
-import 'package:practice_app/Services/Auth/FirebaseAuthProvider.dart';
+import 'package:tick_notes/Services/Auth/Auth_Provider.dart';
+import 'package:tick_notes/Services/Auth/AuthUser.dart';
+import 'package:tick_notes/Services/Auth/FirebaseAuthProvider.dart';
 
 class AuthService implements Auth_Provider{
   final Auth_Provider provider;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:practice_app/Services/Auth/FirebaseAuthProvider.dart';
-import 'package:practice_app/Services/Auth/bloc/auth_bloc.dart';
-import 'package:practice_app/main.dart'; // Allows access to your HomePage
+import 'package:tick_notes/Services/Auth/FirebaseAuthProvider.dart';
+import 'package:tick_notes/Services/Auth/bloc/auth_bloc.dart';
+import 'package:tick_notes/main.dart'; // Allows access to your HomePage
 
 class AnimatedSplashScreen extends StatefulWidget {
   const AnimatedSplashScreen({super.key});
