@@ -6,20 +6,20 @@ part of 'pomodoro_view_model.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$pomodoroViewModelHash() => r'f94984d5e36fe39c2d8e19988b345731fb619779';
+String _$pomodoroViewModelHash() => r'2f764b2991ab208ae587941cadc72dcd9d5a6ca7';
 
 /// See also [PomodoroViewModel].
 @ProviderFor(PomodoroViewModel)
 final pomodoroViewModelProvider =
     AutoDisposeNotifierProvider<PomodoroViewModel, PomodoroState>.internal(
-  PomodoroViewModel.new,
-  name: r'pomodoroViewModelProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$pomodoroViewModelHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+      PomodoroViewModel.new,
+      name: r'pomodoroViewModelProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$pomodoroViewModelHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
 typedef _$PomodoroViewModel = AutoDisposeNotifier<PomodoroState>;
 // ignore_for_file: type=lint

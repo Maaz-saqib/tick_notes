@@ -146,18 +146,20 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
               ),
             ),
             const SizedBox(height: 24),
-            Container(
-              height: 60,
-              padding: const EdgeInsets.symmetric(horizontal: 40.0),
-              child: Text(
-                _selectedQuote,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontStyle: FontStyle.italic,
-                  fontSize: 15,
-                  color: primaryColor.withOpacity(0.85),
-                  height: 1.4,
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 60),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                child: Text(
+                  _selectedQuote,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontStyle: FontStyle.italic,
+                    fontSize: 15,
+                    color: primaryColor.withOpacity(0.85),
+                    height: 1.4,
+                  ),
                 ),
               ),
             ),

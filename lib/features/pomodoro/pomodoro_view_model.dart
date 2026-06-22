@@ -3,11 +3,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'pomodoro_repository.dart';
 import '../../core/database/app_database.dart';
 import '../../core/notifications/notification_service.dart';
-import 'package:drift/drift.dart';
 
 part 'pomodoro_view_model.g.dart';
 
 enum FocusMode { pomodoro, open }
+
 enum PomodoroPhase { focus, breakPhase }
 
 class PomodoroState {
@@ -161,24 +161,29 @@ class PomodoroViewModel extends _$PomodoroViewModel {
 
         if (state.mode == FocusMode.open) {
           // Open Focus Mode: Save time with "open" mode
-          ref.read(pomodoroRepositoryProvider).add(
-            PomodoroSessionsCompanion.insert(
-              startTime: start,
-              endTime: now,
-              durationMinutes: durationMinutes,
-              mode: 'open',
-            ),
-          );
-        } else if (state.mode == FocusMode.pomodoro && state.pomodoroPhase == PomodoroPhase.focus) {
+          ref
+              .read(pomodoroRepositoryProvider)
+              .add(
+                PomodoroSessionsCompanion.insert(
+                  startTime: start,
+                  endTime: now,
+                  durationMinutes: durationMinutes,
+                  mode: 'open',
+                ),
+              );
+        } else if (state.mode == FocusMode.pomodoro &&
+            state.pomodoroPhase == PomodoroPhase.focus) {
           // Pomodoro Focus Phase: Save time with "pomodoro" mode
-          ref.read(pomodoroRepositoryProvider).add(
-            PomodoroSessionsCompanion.insert(
-              startTime: start,
-              endTime: now,
-              durationMinutes: durationMinutes,
-              mode: 'pomodoro',
-            ),
-          );
+          ref
+              .read(pomodoroRepositoryProvider)
+              .add(
+                PomodoroSessionsCompanion.insert(
+                  startTime: start,
+                  endTime: now,
+                  durationMinutes: durationMinutes,
+                  mode: 'pomodoro',
+                ),
+              );
         }
         // If it's a break phase, we skip database writing entirely
       }
@@ -186,7 +191,9 @@ class PomodoroViewModel extends _$PomodoroViewModel {
 
     Duration limit = Duration.zero;
     if (state.mode == FocusMode.pomodoro) {
-      limit = state.pomodoroPhase == PomodoroPhase.focus ? _customFocusDuration : _customBreakDuration;
+      limit = state.pomodoroPhase == PomodoroPhase.focus
+          ? _customFocusDuration
+          : _customBreakDuration;
     }
 
     state = PomodoroState(
@@ -214,7 +221,9 @@ class PomodoroViewModel extends _$PomodoroViewModel {
         elapsedDuration: Duration.zero,
       );
     } else {
-      final nextSession = state.pomodoroSession >= 4 ? 1 : state.pomodoroSession + 1;
+      final nextSession = state.pomodoroSession >= 4
+          ? 1
+          : state.pomodoroSession + 1;
       state = PomodoroState(
         mode: FocusMode.pomodoro,
         pomodoroPhase: PomodoroPhase.focus,
@@ -236,7 +245,8 @@ class PomodoroViewModel extends _$PomodoroViewModel {
         final delta = now.difference(start);
         final newElapsed = state.elapsedDuration + delta;
 
-        if (state.mode == FocusMode.pomodoro && newElapsed >= state.durationLimit) {
+        if (state.mode == FocusMode.pomodoro &&
+            newElapsed >= state.durationLimit) {
           // Timer finished in background
           state = state.copyWith(
             elapsedDuration: state.durationLimit,
@@ -263,36 +273,37 @@ class PomodoroViewModel extends _$PomodoroViewModel {
       final now = DateTime.now();
       final newElapsed = state.elapsedDuration + const Duration(seconds: 1);
 
-      if (state.mode == FocusMode.pomodoro && newElapsed >= state.durationLimit) {
+      if (state.mode == FocusMode.pomodoro &&
+          newElapsed >= state.durationLimit) {
         state = state.copyWith(
           elapsedDuration: state.durationLimit,
           lastTickTime: now,
         );
         _sessionCompleted();
       } else {
-        state = state.copyWith(
-          elapsedDuration: newElapsed,
-          lastTickTime: now,
-        );
+        state = state.copyWith(elapsedDuration: newElapsed, lastTickTime: now);
       }
     });
   }
 
   void _sessionCompleted() {
     _timer?.cancel();
-    final start = state.sessionStart ?? DateTime.now().subtract(state.durationLimit);
+    final start =
+        state.sessionStart ?? DateTime.now().subtract(state.durationLimit);
     final now = DateTime.now();
 
     // Only save if completed session was Focus, not Break
     if (state.pomodoroPhase == PomodoroPhase.focus) {
-      ref.read(pomodoroRepositoryProvider).add(
-        PomodoroSessionsCompanion.insert(
-          startTime: start,
-          endTime: now,
-          durationMinutes: state.durationLimit.inMinutes,
-          mode: 'pomodoro',
-        ),
-      );
+      ref
+          .read(pomodoroRepositoryProvider)
+          .add(
+            PomodoroSessionsCompanion.insert(
+              startTime: start,
+              endTime: now,
+              durationMinutes: state.durationLimit.inMinutes,
+              mode: 'pomodoro',
+            ),
+          );
     }
 
     // Switch next phase
@@ -306,7 +317,9 @@ class PomodoroViewModel extends _$PomodoroViewModel {
         elapsedDuration: Duration.zero,
       );
     } else {
-      final nextSession = state.pomodoroSession >= 4 ? 1 : state.pomodoroSession + 1;
+      final nextSession = state.pomodoroSession >= 4
+          ? 1
+          : state.pomodoroSession + 1;
       state = PomodoroState(
         mode: FocusMode.pomodoro,
         pomodoroPhase: PomodoroPhase.focus,

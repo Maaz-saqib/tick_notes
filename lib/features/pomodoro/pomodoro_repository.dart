@@ -23,6 +23,14 @@ class PomodoroRepository {
         .get();
   }
 
+  Stream<List<PomodoroSession>> watchSessionsInPastDays(int days) {
+    final cutoff = DateTime.now().subtract(Duration(days: days));
+    return (_db.select(_db.pomodoroSessions)
+          ..where((t) => t.startTime.isBiggerOrEqualValue(cutoff))
+          ..orderBy([(t) => OrderingTerm(expression: t.startTime, mode: OrderingMode.asc)]))
+        .watch();
+  }
+
   Future<int> add(PomodoroSessionsCompanion session) =>
       _db.into(_db.pomodoroSessions).insert(session);
 }

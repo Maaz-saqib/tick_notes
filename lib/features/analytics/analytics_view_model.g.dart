@@ -7,11 +7,11 @@ part of 'analytics_view_model.dart';
 // **************************************************************************
 
 String _$analyticsViewModelHash() =>
-    r'3f90fce07d2a4b5c2f9ca04165718f7234747dbf';
+    r'6b796d1bd50ccc478d51bc1b2c36a1a24633c64e';
 
 /// See also [AnalyticsViewModel].
 @ProviderFor(AnalyticsViewModel)
-final analyticsViewModelProvider = AutoDisposeAsyncNotifierProvider<
+final analyticsViewModelProvider = AutoDisposeStreamNotifierProvider<
     AnalyticsViewModel, List<DailyFocusStats>>.internal(
   AnalyticsViewModel.new,
   name: r'analyticsViewModelProvider',
@@ -22,6 +22,6 @@ final analyticsViewModelProvider = AutoDisposeAsyncNotifierProvider<
   allTransitiveDependencies: null,
 );
 
-typedef _$AnalyticsViewModel = AutoDisposeAsyncNotifier<List<DailyFocusStats>>;
+typedef _$AnalyticsViewModel = AutoDisposeStreamNotifier<List<DailyFocusStats>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
