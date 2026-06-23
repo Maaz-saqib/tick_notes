@@ -8,14 +8,15 @@ import 'package:tick_notes/features/dashboard/dashboard_screen.dart';
 import 'Constants/Routes.dart';
 import 'package:tick_notes/screens/animated_splash_screen.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    await NotificationService.instance.init();
-  } catch (e, stack) {
+  
+  // Initialize NotificationService asynchronously in the background so it doesn't block startup
+  NotificationService.instance.init().catchError((e, stack) {
     debugPrint('Failed to initialize NotificationService: $e');
     debugPrint(stack.toString());
-  }
+  });
+
   runApp(
     const ProviderScope(
       child: MyApp(),
