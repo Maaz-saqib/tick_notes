@@ -88,7 +88,7 @@ class ThemeNotifier extends _$ThemeNotifier {
     await db.into(db.settings).insertOnConflictUpdate(
       SettingsCompanion(
         key: const drift.Value(_seedColorKey),
-        value: drift.Value(color.value.toString()),
+        value: drift.Value(color.toARGB32().toString()),
       ),
     );
   }

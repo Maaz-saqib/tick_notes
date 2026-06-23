@@ -56,7 +56,7 @@ class TodoViewModel extends _$TodoViewModel {
     await ref.read(todoRepositoryProvider).updateTodo(id, companion);
 
     // Cancel old reminder
-    await NotificationService.instance.cancelNotification(id);
+    await ref.read(notificationServiceProvider).cancelNotification(id);
 
     // Schedule new one if not completed, reminder is requested, and due date is in the future
     if (!isCompleted && hasReminder && dueDate != null && dueDate.isAfter(DateTime.now())) {
@@ -74,7 +74,7 @@ class TodoViewModel extends _$TodoViewModel {
     await ref.read(todoRepositoryProvider).updateTodo(todo.id, companion);
 
     if (isCompleted) {
-      await NotificationService.instance.cancelNotification(todo.id);
+      await ref.read(notificationServiceProvider).cancelNotification(todo.id);
     } else {
       // If uncompleted and original note had reminder setup (meaning dueDate is not null), we should schedule if due date is still valid.
       // For simplicity, we check if it has a due date in the future and schedule it.
@@ -86,7 +86,7 @@ class TodoViewModel extends _$TodoViewModel {
 
   Future<void> deleteTodo(int id) async {
     await ref.read(todoRepositoryProvider).delete(id);
-    await NotificationService.instance.cancelNotification(id);
+    await ref.read(notificationServiceProvider).cancelNotification(id);
   }
 
   Future<int> restoreTodo(Todo todo) async {
@@ -109,8 +109,8 @@ class TodoViewModel extends _$TodoViewModel {
 
   Future<void> _scheduleTodoNotification(int id, String title, DateTime scheduledTime) async {
     // Request permission just in case
-    await NotificationService.instance.requestPermissions();
-    await NotificationService.instance.scheduleNotification(
+    await ref.read(notificationServiceProvider).requestPermissions();
+    await ref.read(notificationServiceProvider).scheduleNotification(
       id: id,
       title: 'Task Reminder',
       body: title.isNotEmpty ? title : 'Untitled Task is due now!',

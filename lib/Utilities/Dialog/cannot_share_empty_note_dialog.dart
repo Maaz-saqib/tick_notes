@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:tick_notes/Utilities/Dialog/Generic_Dialog.dart';
+import 'package:tick_notes/Utilities/Dialog/generic_dialog.dart';
 
 Future<void> showCannotShareEmptyNoteDialog(BuildContext context) {
   return showGenericDialog(

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tick_notes/core/theme/theme_notifier.dart';
 import 'notes_view_model.dart';
-import 'note_editor_screen.dart'; // To get getNoteColor
-import '../../Constants/Routes.dart';
+import '../../Utilities/theme_utils.dart';
+import '../../Constants/routes.dart';
 
 class NotesListScreen extends ConsumerStatefulWidget {
   final GlobalKey? addNoteKey;
@@ -128,7 +128,7 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                 filled: true,
                 fillColor: Theme.of(
                   context,
-                ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               ),
             ),
           ),
@@ -153,7 +153,7 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                             decoration: BoxDecoration(
                               color: Theme.of(
                                 context,
-                              ).colorScheme.primaryContainer.withOpacity(0.2),
+                                ).colorScheme.primaryContainer.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -278,7 +278,7 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
                           side: BorderSide(
                             color: Theme.of(
                               context,
-                            ).colorScheme.outlineVariant.withOpacity(0.4),
+                            ).colorScheme.outlineVariant.withValues(alpha: 0.4),
                           ),
                         ),
                         child: InkWell(

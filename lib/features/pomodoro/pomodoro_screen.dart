@@ -190,7 +190,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen>
                           ? 0.0 // Keep empty/clean for open count up
                           : 1.0 - progress, // Countdown visual
                       strokeWidth: 10,
-                      backgroundColor: themeColor.withOpacity(0.15),
+                      backgroundColor: themeColor.withValues(alpha: 0.15),
                       valueColor: AlwaysStoppedAnimation<Color>(themeColor),
                     ),
                   ),

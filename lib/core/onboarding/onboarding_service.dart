@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
+import 'onboarding_tooltip_card.dart';
 
 class OnboardingService {
   OnboardingService._internal();
@@ -36,11 +37,11 @@ class OnboardingService {
           TargetContent(
             align: ContentAlign.top,
             builder: (context, controller) {
-              return _buildTooltipCard(
-                context: context,
+              return OnboardingTooltipCard(
                 title: "Your second brain",
                 body: "Thoughts disappear. Notes don't. Capture anything instantly before your mind moves on.",
                 stepIndex: 1,
+                totalSteps: 5,
                 controller: controller,
               );
             },
@@ -60,11 +61,11 @@ class OnboardingService {
           TargetContent(
             align: ContentAlign.top,
             builder: (context, controller) {
-              return _buildTooltipCard(
-                context: context,
+              return OnboardingTooltipCard(
                 title: "Stop forgetting. Start doing.",
                 body: "Your to-do list with reminders that actually fire. Because a task without a deadline is just a wish.",
                 stepIndex: 2,
+                totalSteps: 5,
                 controller: controller,
               );
             },
@@ -84,11 +85,11 @@ class OnboardingService {
           TargetContent(
             align: ContentAlign.top,
             builder: (context, controller) {
-              return _buildTooltipCard(
-                context: context,
+              return OnboardingTooltipCard(
                 title: "Protect your attention",
                 body: "Distractions are expensive. The Pomodoro timer gives your focus a structure that makes deep work feel achievable.",
                 stepIndex: 3,
+                totalSteps: 5,
                 controller: controller,
               );
             },
@@ -108,11 +109,11 @@ class OnboardingService {
           TargetContent(
             align: ContentAlign.bottom,
             builder: (context, controller) {
-              return _buildTooltipCard(
-                context: context,
+              return OnboardingTooltipCard(
                 title: "One tap to start",
                 body: "Everything in this app begins here. Fast, clean, no friction between your idea and saving it.",
                 stepIndex: 4,
+                totalSteps: 5,
                 controller: controller,
               );
             },
@@ -132,11 +133,11 @@ class OnboardingService {
           TargetContent(
             align: ContentAlign.top,
             builder: (context, controller) {
-              return _buildTooltipCard(
-                context: context,
+              return OnboardingTooltipCard(
                 title: "See your effort, not just feel it",
                 body: "30 days of your focus time visualized. Because progress you can see is progress you will repeat.",
                 stepIndex: 5,
+                totalSteps: 5,
                 controller: controller,
               );
             },
@@ -172,104 +173,5 @@ class OnboardingService {
     _tutorial!.show(context: context);
   }
 
-  Widget _buildTooltipCard({
-    required BuildContext context,
-    required String title,
-    required String body,
-    required int stepIndex,
-    required TutorialCoachMarkController controller,
-  }) {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 280),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A237E), // The app's navy
-        borderRadius: BorderRadius.circular(14),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              decoration: TextDecoration.none,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Divider(
-            height: 1,
-            thickness: 0.5,
-            color: Colors.white.withOpacity(0.2),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            body,
-            style: const TextStyle(
-              color: Color(0xFF9FA8DA),
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-              height: 1.6,
-              decoration: TextDecoration.none,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Skip button on Step 1 only
-              if (stepIndex == 1)
-                GestureDetector(
-                  onTap: () => controller.skip(),
-                  child: const Text(
-                    'Skip',
-                    style: TextStyle(
-                      color: Color(0xFF9FA8DA),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      decoration: TextDecoration.none,
-                    ),
-                  ),
-                )
-              else
-                const SizedBox(width: 24), // Maintain alignment spacer
 
-              // Row of 5 dots
-              Row(
-                children: List.generate(5, (index) {
-                  final isCurrent = index == (stepIndex - 1);
-                  return Container(
-                    width: 6,
-                    height: 6,
-                    margin: EdgeInsets.only(right: index == 4 ? 0 : 5),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(isCurrent ? 1.0 : 0.3),
-                    ),
-                  );
-                }),
-              ),
-
-              // Next / Let's go button
-              GestureDetector(
-                onTap: () => controller.next(),
-                child: Text(
-                  stepIndex == 5 ? "Let's go" : 'Next',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    decoration: TextDecoration.none,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 }

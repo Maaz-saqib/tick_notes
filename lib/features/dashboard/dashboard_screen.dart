@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tick_notes/core/database/database_provider.dart';
+import 'dashboard_view_model.dart';
 import 'package:tick_notes/core/onboarding/onboarding_service.dart';
 import 'package:tick_notes/features/notes/notes_list_screen.dart';
 import 'package:tick_notes/features/todo/todo_list_screen.dart';
@@ -37,19 +36,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     ];
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final prefs = await SharedPreferences.getInstance();
-      final seen = prefs.getBool('onboarding_complete') ?? false;
-      if (seen) return;
-
-      // Check if Drift database has any notes or tasks (returning users)
-      final db = ref.read(databaseProvider);
-      final notes = await db.select(db.notes).get();
-      final todos = await db.select(db.todos).get();
-      
-      if (notes.isNotEmpty || todos.isNotEmpty) {
-        await prefs.setBool('onboarding_complete', true);
-        return;
-      }
+      final shouldShow = await ref.read(dashboardViewModelProvider.notifier).shouldShowOnboarding();
+      if (!shouldShow) return;
 
       if (mounted) {
         OnboardingService.instance.showOnboarding(

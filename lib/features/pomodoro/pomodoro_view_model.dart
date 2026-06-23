@@ -122,7 +122,7 @@ class PomodoroViewModel extends _$PomodoroViewModel {
     if (state.mode == FocusMode.pomodoro) {
       final remaining = state.durationLimit - state.elapsedDuration;
       final scheduledTime = now.add(remaining);
-      NotificationService.instance.scheduleNotification(
+      ref.read(notificationServiceProvider).scheduleNotification(
         id: 9999, // Static ID for Pomodoro reminders
         title: state.pomodoroPhase == PomodoroPhase.focus
             ? 'Focus Timer Done'
@@ -140,13 +140,13 @@ class PomodoroViewModel extends _$PomodoroViewModel {
   void pauseSession() {
     if (!state.isRunning) return;
     _timer?.cancel();
-    NotificationService.instance.cancelNotification(9999);
+    ref.read(notificationServiceProvider).cancelNotification(9999);
     state = state.copyWith(isRunning: false);
   }
 
   void stopSession({bool forceSave = true}) {
     _timer?.cancel();
-    NotificationService.instance.cancelNotification(9999);
+    ref.read(notificationServiceProvider).cancelNotification(9999);
 
     final start = state.sessionStart;
     final now = DateTime.now();

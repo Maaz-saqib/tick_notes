@@ -49,4 +49,8 @@ class NotesViewModel extends _$NotesViewModel {
       ),
     );
   }
+
+  Future<Note?> getNoteById(int id) {
+    return ref.read(notesRepositoryProvider).getNote(id);
+  }
 }

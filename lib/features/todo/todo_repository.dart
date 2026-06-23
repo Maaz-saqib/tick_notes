@@ -29,6 +29,8 @@ class TodoRepository {
 
   Future<Todo?> getTodo(int id) =>
       (_db.select(_db.todos)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<List<Todo>> getAll() => _db.select(_db.todos).get();
 }
 
 @riverpod

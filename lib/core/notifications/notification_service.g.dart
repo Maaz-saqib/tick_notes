@@ -1,26 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'notes_view_model.dart';
+part of 'notification_service.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$notesViewModelHash() => r'ae84545bdfadaa1277976f4e5c8c2310cdc68272';
+String _$notificationServiceHash() =>
+    r'9bfcacad76ae95db4206dba3a1da14da65ed1db8';
 
-/// See also [NotesViewModel].
-@ProviderFor(NotesViewModel)
-final notesViewModelProvider =
-    AutoDisposeStreamNotifierProvider<NotesViewModel, List<Note>>.internal(
-  NotesViewModel.new,
-  name: r'notesViewModelProvider',
+/// See also [notificationService].
+@ProviderFor(notificationService)
+final notificationServiceProvider = Provider<NotificationService>.internal(
+  notificationService,
+  name: r'notificationServiceProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$notesViewModelHash,
+      : _$notificationServiceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$NotesViewModel = AutoDisposeStreamNotifier<List<Note>>;
+typedef NotificationServiceRef = ProviderRef<NotificationService>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'todo_view_model.dart';
-import '../notes/note_editor_screen.dart' show getNoteColor;
+import '../../Utilities/theme_utils.dart';
 import '../../core/database/app_database.dart';
-import '../../Constants/Routes.dart';
+import '../../Constants/routes.dart';
 import 'package:share_plus/share_plus.dart';
 
 class TodoListScreen extends ConsumerStatefulWidget {
@@ -78,7 +78,7 @@ class _TodoListScreenState extends ConsumerState<TodoListScreen>
             Icon(
               Icons.check_circle_outline_outlined,
               size: 72,
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.4),
+              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.4),
             ),
             const SizedBox(height: 16),
             Text(
@@ -205,10 +205,9 @@ class _TodoListScreenState extends ConsumerState<TodoListScreen>
                 ),
                 onDismissed: (direction) async {
                   final deletedTodo = todo;
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
                   await ref.read(todoViewModelProvider.notifier).deleteTodo(todo.id);
 
-                  if (!mounted) return;
-                  final scaffoldMessenger = ScaffoldMessenger.of(context);
                   scaffoldMessenger.clearSnackBars();
                   scaffoldMessenger.showSnackBar(
                     SnackBar(
@@ -291,7 +290,7 @@ class _AnimatedTodoCardState extends State<AnimatedTodoCard>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(
-            color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3),
           ),
         ),
         child: InkWell(
@@ -370,7 +369,7 @@ class _AnimatedTodoCardState extends State<AnimatedTodoCard>
                   Icon(
                     Icons.alarm,
                     size: 18,
-                    color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.6),
                   ),
               ],
             ),

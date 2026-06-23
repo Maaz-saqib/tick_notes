@@ -25,6 +25,8 @@ class NotesRepository {
 
   Future<Note?> getNote(int id) =>
       (_db.select(_db.notes)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<List<Note>> getAll() => _db.select(_db.notes).get();
 }
 
 @riverpod

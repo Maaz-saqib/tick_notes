@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:tick_notes/core/theme/theme_notifier.dart';
 import 'package:tick_notes/core/notifications/notification_service.dart';
 import 'package:tick_notes/features/notes/note_editor_screen.dart';
 import 'package:tick_notes/features/todo/todo_editor_screen.dart';
-import 'package:tick_notes/features/dashboard/dashboard_screen.dart';
-import 'Constants/Routes.dart';
-import 'package:tick_notes/screens/animated_splash_screen.dart';
+import 'Constants/routes.dart';
+import 'package:tick_notes/core/splash/animated_splash_screen.dart';
+
+
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  // Hold the native splash visible until AnimatedSplashScreen signals it to go away.
+  // This closes the white-screen gap between native splash and Flutter first frame.
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   // Initialize NotificationService asynchronously in the background so it doesn't block startup
   NotificationService.instance.init().catchError((e, stack) {
@@ -54,11 +60,3 @@ class MyApp extends ConsumerWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const DashboardScreen();
-  }
-}

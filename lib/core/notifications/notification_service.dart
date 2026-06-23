@@ -2,6 +2,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter/foundation.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'notification_service.g.dart';
 
 class NotificationService {
   NotificationService._internal();
@@ -109,4 +112,9 @@ class NotificationService {
   Future<void> cancelNotification(int id) async {
     await _notificationsPlugin.cancel(id);
   }
+}
+
+@Riverpod(keepAlive: true)
+NotificationService notificationService(NotificationServiceRef ref) {
+  return NotificationService.instance;
 }

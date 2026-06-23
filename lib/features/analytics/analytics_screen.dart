@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'analytics_view_model.dart';
-import '../notes/note_editor_screen.dart' show getNoteColor;
+import '../../Utilities/theme_utils.dart';
 import 'dart:math';
 
 class AnalyticsScreen extends ConsumerStatefulWidget {
@@ -46,7 +46,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                     Expanded(
                       child: Card(
                         elevation: 0,
-                        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.25),
+                        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.25),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
@@ -77,7 +77,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                     Expanded(
                       child: Card(
                         elevation: 0,
-                        color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.25),
+                        color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.25),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
@@ -192,7 +192,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                     toY: day.totalMinutes.toDouble(),
                                     color: isSelected
                                         ? Theme.of(context).colorScheme.primary
-                                        : Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                                        : Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
                                     width: 8,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
@@ -221,7 +221,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                   if (_selectedDay!.sessions.isEmpty)
                     Card(
                       elevation: 0,
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                       child: const ListTile(
                         leading: Icon(Icons.info_outline),
                         title: Text('No focus sessions recorded on this day.'),
@@ -247,7 +247,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                             side: BorderSide(
-                              color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.3),
+                              color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3),
                             ),
                           ),
                           child: ListTile(

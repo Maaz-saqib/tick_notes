@@ -158,7 +158,7 @@ class _TodoEditorScreenState extends ConsumerState<TodoEditorScreen> {
             const SizedBox(height: 12),
             Card(
               elevation: 0,
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:tick_notes/main.dart'; // Allows access to your HomePage
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:tick_notes/core/splash/home_page.dart';
 
 class AnimatedSplashScreen extends StatefulWidget {
   const AnimatedSplashScreen({super.key});
@@ -81,6 +82,9 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     // timer elapses during the freeze and the splash is skipped entirely.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
+        // Dismiss the native splash exactly when the Flutter splash is painted.
+        // This removes the white-screen gap between native and Flutter splash.
+        FlutterNativeSplash.remove();
         _controller.forward();
       }
     });
@@ -145,7 +149,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
                       value: _progressAnimation.value,
-                      backgroundColor: primaryColor.withOpacity(0.1),
+                      backgroundColor: primaryColor.withValues(alpha: 0.1),
                       valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
                       minHeight: 4,
                     ),
@@ -165,7 +169,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                     fontWeight: FontWeight.normal,
                     fontStyle: FontStyle.italic,
                     fontSize: 15,
-                    color: primaryColor.withOpacity(0.85),
+                    color: primaryColor.withValues(alpha: 0.85),
                     height: 1.4,
                   ),
                 ),

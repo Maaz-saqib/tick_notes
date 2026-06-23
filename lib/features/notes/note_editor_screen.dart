@@ -2,30 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import 'notes_view_model.dart';
-import 'notes_repository.dart';
 import '../../core/database/app_database.dart';
 import '../../Utilities/Generics/get_arguments.dart';
 import '../../Utilities/Dialog/cannot_share_empty_note_dialog.dart';
+import '../../Utilities/theme_utils.dart';
 
-Color getNoteColor(BuildContext context, int colorTag) {
-  final isDark = Theme.of(context).brightness == Brightness.dark;
-  switch (colorTag) {
-    case 1:
-      return isDark ? const Color(0xFF421D1D) : const Color(0xFFFFEBEE); // Soft Red
-    case 2:
-      return isDark ? const Color(0xFF422D1D) : const Color(0xFFFFF3E0); // Soft Orange
-    case 3:
-      return isDark ? const Color(0xFF423D1D) : const Color(0xFFFFFDE7); // Soft Yellow
-    case 4:
-      return isDark ? const Color(0xFF1D4222) : const Color(0xFFE8F5E9); // Soft Green
-    case 5:
-      return isDark ? const Color(0xFF1D2E42) : const Color(0xFFE3F2FD); // Soft Blue
-    case 6:
-      return isDark ? const Color(0xFF331D42) : const Color(0xFFF3E5F5); // Soft Purple
-    default:
-      return Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3); // Default
-  }
-}
 
 class NoteEditorScreen extends ConsumerStatefulWidget {
   const NoteEditorScreen({super.key});
@@ -39,6 +20,9 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
   late final TextEditingController _titleController;
   late final TextEditingController _bodyController;
   bool _isInitialized = false;
+  /// Captured before dispose so we can still call deleteNote/updateNote
+  /// after the widget tree has deactivated the Riverpod ref.
+  NotesViewModel? _viewModel;
 
   @override
   void initState() {
@@ -48,9 +32,17 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
   }
 
   @override
-  void dispose() {
+  void deactivate() {
+    // Capture the ViewModel while ref is still alive.
+    // By the time dispose() runs, ref is already dead.
+    _viewModel = ref.read(notesViewModelProvider.notifier);
     _removeListeners();
     _saveOrDeleteNote();
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
     _titleController.dispose();
     _bodyController.dispose();
     super.dispose();
@@ -58,15 +50,17 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
 
   void _saveOrDeleteNote() {
     final note = _note;
-    if (note == null) return;
+    final vm = _viewModel;
+    if (note == null || vm == null) return;
 
     final title = _titleController.text.trim();
     final body = _bodyController.text.trim();
 
     if (title.isEmpty && body.isEmpty) {
-      ref.read(notesViewModelProvider.notifier).deleteNote(note.id);
+      // Auto-delete empty notes
+      vm.deleteNote(note.id);
     } else {
-      ref.read(notesViewModelProvider.notifier).updateNoteContent(
+      vm.updateNoteContent(
             note.id,
             title,
             body,
@@ -86,6 +80,7 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
   }
 
   void _onTextChanged() {
+    if (!mounted) return;
     final note = _note;
     if (note == null) return;
     ref.read(notesViewModelProvider.notifier).updateNoteContent(
@@ -111,9 +106,21 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
       return widgetNote;
     }
 
+    final notesViewModel = ref.read(notesViewModelProvider.notifier);
+
     // Creating a new note locally
-    final newId = await ref.read(notesViewModelProvider.notifier).addNote('', '', 0);
-    final newNote = await ref.read(notesRepositoryProvider).getNote(newId);
+    final newId = await notesViewModel.addNote('', '', 0);
+    if (!mounted) {
+      await notesViewModel.deleteNote(newId);
+      throw Exception('Widget disposed during note creation');
+    }
+
+    final newNote = await notesViewModel.getNoteById(newId);
+    if (!mounted) {
+      await notesViewModel.deleteNote(newId);
+      throw Exception('Widget disposed during note loading');
+    }
+
     _note = newNote;
     _isInitialized = true;
     _setupListeners();
@@ -133,6 +140,43 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
         backgroundColor: scaffoldBgColor,
         elevation: 0,
         actions: [
+          IconButton(
+            onPressed: () async {
+              final note = _note;
+              if (note != null) {
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Delete Note'),
+                    content: const Text('Are you sure you want to delete this note?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Theme.of(context).colorScheme.error,
+                        ),
+                        child: const Text('Delete'),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirm == true) {
+                  _removeListeners();
+                  _note = null;
+                  await ref.read(notesViewModelProvider.notifier).deleteNote(note.id);
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+                }
+              }
+            },
+            icon: const Icon(Icons.delete_outline),
+          ),
           IconButton(
             onPressed: () async {
               final text = '${_titleController.text}\n\n${_bodyController.text}'.trim();
@@ -235,7 +279,7 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
                           boxShadow: isSelected
                               ? [
                                   BoxShadow(
-                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                                     blurRadius: 6,
                                     spreadRadius: 1,
                                   )
