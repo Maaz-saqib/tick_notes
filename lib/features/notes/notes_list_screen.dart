@@ -6,7 +6,8 @@ import 'note_editor_screen.dart'; // To get getNoteColor
 import '../../Constants/Routes.dart';
 
 class NotesListScreen extends ConsumerStatefulWidget {
-  const NotesListScreen({super.key});
+  final GlobalKey? addNoteKey;
+  const NotesListScreen({super.key, this.addNoteKey});
 
   @override
   ConsumerState<NotesListScreen> createState() => _NotesListScreenState();
@@ -83,6 +84,7 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
             tooltip: 'Change Seed Color',
           ),
           IconButton(
+            key: widget.addNoteKey,
             onPressed: () {
               Navigator.of(context).pushNamed(createOrUpdateNoteRoute);
             },

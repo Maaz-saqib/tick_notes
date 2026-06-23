@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tick_notes/core/database/database_provider.dart';
+import 'package:tick_notes/core/onboarding/onboarding_service.dart';
 import 'package:tick_notes/features/notes/notes_list_screen.dart';
 import 'package:tick_notes/features/todo/todo_list_screen.dart';
 import 'package:tick_notes/features/pomodoro/pomodoro_screen.dart';
@@ -15,50 +18,103 @@ class DashboardScreen extends ConsumerStatefulWidget {
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [
-    NotesListScreen(),
-    TodoListScreen(),
-    PomodoroScreen(),
-    AnalyticsScreen(),
-  ];
+  final GlobalKey notesTabKey = GlobalKey();
+  final GlobalKey tasksTabKey = GlobalKey();
+  final GlobalKey focusTabKey = GlobalKey();
+  final GlobalKey addNoteKey = GlobalKey();
+  final GlobalKey statsTabKey = GlobalKey();
+
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      NotesListScreen(addNoteKey: addNoteKey),
+      const TodoListScreen(),
+      const PomodoroScreen(),
+      const AnalyticsScreen(),
+    ];
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      final seen = prefs.getBool('onboarding_complete') ?? false;
+      if (seen) return;
+
+      // Check if Drift database has any notes or tasks (returning users)
+      final db = ref.read(databaseProvider);
+      final notes = await db.select(db.notes).get();
+      final todos = await db.select(db.todos).get();
+      
+      if (notes.isNotEmpty || todos.isNotEmpty) {
+        await prefs.setBool('onboarding_complete', true);
+        return;
+      }
+
+      if (mounted) {
+        OnboardingService.instance.showOnboarding(
+          context,
+          notesTabKey: notesTabKey,
+          tasksTabKey: tasksTabKey,
+          focusTabKey: focusTabKey,
+          addNoteKey: addNoteKey,
+          statsTabKey: statsTabKey,
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.note_alt_outlined),
-            selectedIcon: Icon(Icons.note_alt),
-            label: 'Notes',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.check_circle_outline),
-            selectedIcon: Icon(Icons.check_circle),
-            label: 'Tasks',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.timer_outlined),
-            selectedIcon: Icon(Icons.timer),
-            label: 'Focus',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.bar_chart_outlined),
-            selectedIcon: Icon(Icons.bar_chart),
-            label: 'Stats',
-          ),
-        ],
+    return PopScope(
+      canPop: !OnboardingService.instance.isShowing,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (OnboardingService.instance.isShowing) {
+          OnboardingService.instance.skip();
+        }
+      },
+      child: Scaffold(
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _screens,
+        ),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          destinations: [
+            NavigationDestination(
+              key: notesTabKey,
+              icon: const Icon(Icons.note_alt_outlined),
+              selectedIcon: const Icon(Icons.note_alt),
+              label: 'Notes',
+            ),
+            NavigationDestination(
+              key: tasksTabKey,
+              icon: const Icon(Icons.check_circle_outline),
+              selectedIcon: const Icon(Icons.check_circle),
+              label: 'Tasks',
+            ),
+            NavigationDestination(
+              key: focusTabKey,
+              icon: const Icon(Icons.timer_outlined),
+              selectedIcon: const Icon(Icons.timer),
+              label: 'Focus',
+            ),
+            NavigationDestination(
+              key: statsTabKey,
+              icon: const Icon(Icons.bar_chart_outlined),
+              selectedIcon: const Icon(Icons.bar_chart),
+              label: 'Stats',
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+

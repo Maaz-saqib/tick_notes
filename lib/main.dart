@@ -10,18 +10,14 @@ import 'package:tick_notes/screens/animated_splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize NotificationService asynchronously in the background so it doesn't block startup
   NotificationService.instance.init().catchError((e, stack) {
     debugPrint('Failed to initialize NotificationService: $e');
     debugPrint(stack.toString());
   });
 
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {

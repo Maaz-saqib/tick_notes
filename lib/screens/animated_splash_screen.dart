@@ -75,7 +75,15 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
       }
     });
 
-    _controller.forward();
+    // Start the animation ONLY after the first frame is fully rendered.
+    // The GPU can freeze the main thread for 10–14 seconds during shader
+    // compilation on first launch. Without this, the AnimationController
+    // timer elapses during the freeze and the splash is skipped entirely.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _controller.forward();
+      }
+    });
   }
 
   void _navigateToHome() {
