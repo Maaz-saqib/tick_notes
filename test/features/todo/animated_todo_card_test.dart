@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:tick_notes/core/database/app_database.dart';
 import 'package:tick_notes/features/todo/todo_list_screen.dart';
 

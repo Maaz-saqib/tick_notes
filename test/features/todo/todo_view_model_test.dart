@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:drift/drift.dart';
 
 import 'package:tick_notes/core/database/app_database.dart';
 import 'package:tick_notes/core/notifications/notification_service.dart';
@@ -48,7 +47,7 @@ void main() {
           .thenAnswer((_) => Stream.value([]));
 
       // Act
-      final sub = container.listen(todoViewModelProvider, (_, __) {});
+      final sub = container.listen(todoViewModelProvider, (p, n) {});
 
       // Assert
       verify(() => mockRepo.watchAll()).called(1);
@@ -62,7 +61,7 @@ void main() {
       when(() => mockRepo.add(any())).thenAnswer((_) async => 1);
 
       // Act
-      container.listen(todoViewModelProvider, (_, __) {});
+      container.listen(todoViewModelProvider, (p, n) {});
       final id = await container
           .read(todoViewModelProvider.notifier)
           .addTodo(
@@ -103,7 +102,7 @@ void main() {
       ).thenAnswer((_) async {});
 
       // Act
-      container.listen(todoViewModelProvider, (_, __) {});
+      container.listen(todoViewModelProvider, (p, n) {});
       final id = await container
           .read(todoViewModelProvider.notifier)
           .addTodo(
@@ -147,7 +146,7 @@ void main() {
           .thenAnswer((_) async {});
 
       // Act
-      container.listen(todoViewModelProvider, (_, __) {});
+      container.listen(todoViewModelProvider, (p, n) {});
       await container
           .read(todoViewModelProvider.notifier)
           .toggleComplete(testTodo);
@@ -172,7 +171,7 @@ void main() {
           .thenAnswer((_) async {});
 
       // Act
-      container.listen(todoViewModelProvider, (_, __) {});
+      container.listen(todoViewModelProvider, (p, n) {});
       await container
           .read(todoViewModelProvider.notifier)
           .deleteTodo(3);

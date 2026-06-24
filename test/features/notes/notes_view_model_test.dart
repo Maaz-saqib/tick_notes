@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:drift/drift.dart';
 
 import 'package:tick_notes/core/database/app_database.dart';
 import 'package:tick_notes/features/notes/notes_repository.dart';
@@ -53,7 +52,7 @@ void main() {
       // Act - reading the provider triggers build()
       final subscription = container.listen(
         notesViewModelProvider,
-        (_, __) {},
+        (p, n) {},
       );
 
       // Assert
@@ -68,7 +67,7 @@ void main() {
       when(() => mockRepo.add(any())).thenAnswer((_) async => 42);
 
       // Act - trigger build first so the notifier is alive
-      container.listen(notesViewModelProvider, (_, __) {});
+      container.listen(notesViewModelProvider, (p, n) {});
       final result = await container
           .read(notesViewModelProvider.notifier)
           .addNote('My Title', 'My Body', 2);
@@ -91,7 +90,7 @@ void main() {
       when(() => mockRepo.delete(any())).thenAnswer((_) async {});
 
       // Act
-      container.listen(notesViewModelProvider, (_, __) {});
+      container.listen(notesViewModelProvider, (p, n) {});
       await container
           .read(notesViewModelProvider.notifier)
           .deleteNote(7);
@@ -115,7 +114,7 @@ void main() {
           .thenAnswer((_) async => testNote);
 
       // Act
-      container.listen(notesViewModelProvider, (_, __) {});
+      container.listen(notesViewModelProvider, (p, n) {});
       final result = await container
           .read(notesViewModelProvider.notifier)
           .getNoteById(5);
